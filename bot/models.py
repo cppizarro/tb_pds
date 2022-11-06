@@ -6,3 +6,7 @@ from django.db import models
 #     id = models.IntegerField()
 #     active_game = models.TextField()
 
+# class Members(models.Model):
+#     id = models.IntegerField()
+
+
