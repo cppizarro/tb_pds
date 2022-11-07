@@ -75,6 +75,7 @@ class BotView(View):
                             user_message = int(command_args[0])
                             if player.attempts >= chat.attempts_number_game:
                                 self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
+                                # implementar fin del juego una vez que a todos se les acaban los intentos
                             else:
                                 if user_message > chat.number_number_game:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
