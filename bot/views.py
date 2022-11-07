@@ -175,4 +175,5 @@ class BotView(View):
 
 
     def get(self, request):
+        # return render(request, 'stats.html')
         return JsonResponse({"ok": "GET request processed"})
