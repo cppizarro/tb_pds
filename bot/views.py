@@ -29,8 +29,6 @@ class BotView(View):
 
         chat_id = t_chat["id"]
 
-        # chat = Chat.objects.get(ichat_d=chat_id)
-
         if Chat.objects.filter(chat_id = chat_id).exists():
             print("existo")
         else:
