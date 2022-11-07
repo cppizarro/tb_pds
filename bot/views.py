@@ -6,13 +6,14 @@ import os
 import requests
 from django.http import JsonResponse
 from django.views import View
+from bot.models import Chat
 
 import random
 
 TELEGRAM_URL = "https://api.telegram.org/bot"
 TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
-# active_game = None
+active_game = None
 # games = ["/number", "/trivia"]
 numbers = dict()
 
@@ -25,6 +26,19 @@ class BotView(View):
         is_command = False
 
         print("data: ", t_data)
+
+        chat_id = t_chat["id"]
+
+        # chat = Chat.objects.get(ichat_d=chat_id)
+
+        if Chat.objects.filter(chat_id = chat_id).exists():
+            print("existo")
+        else:
+            print("no existo")
+            new_chat = Chat(chat_id = chat_id)
+            new_chat.save()
+
+        chat = Chat.objects.get(chat_id=chat_id)
 
         try:
             text = t_message["text"].strip().lower()
@@ -47,8 +61,9 @@ class BotView(View):
             print(command, command_args)
 
             if command == "/number":
-                active_game = "number"
                 try:
+                    chat.active_game = "number"
+                    chat.save()
                     numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
                     self.send_message(" Number game started, guess the number!", t_chat["id"])
                     print(numbers)
@@ -66,7 +81,9 @@ class BotView(View):
                         self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is smaller than mine', t_chat["id"])
                     else:
                         self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} yep, that\'s the right number ( {t_message["text"].split()[1]} )', t_chat["id"])
-                        active_game = None
+                        del numbers[chat_id]
+                        chat.active_game = "None"
+                        chat.save()
                 except ValueError:
                     self.send_message("you must enter an integer", t_chat["id"])
                 except KeyError:
@@ -80,9 +97,7 @@ class BotView(View):
         else:
             self.send_message("I don´t understand", t_chat["id"])
         
-        # if active_game != None:
-        #     if command in games:
-        #         self.send_message("A game is already active.")
+        
         
 
 
