@@ -47,9 +47,7 @@ class BotView(View):
                 new_member = Member(chat = chat, name = f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
                 new_member.save()
 
-            player = Member.objects.get(chat =chat, name=f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
-
-            print(list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True)))
+            player = chat.member.get(name=f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
 
 
             try:
@@ -75,12 +73,14 @@ class BotView(View):
                             if player.attempts >= chat.attempts_number_game:
                                 self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
                             else:
-                                player.attempts += 1
-                                player.save()
                                 if user_message > chat.number_number_game:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
+                                    player.attempts += 1
+                                    player.save()
                                 elif user_message < chat.number_number_game:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is smaller than mine', t_chat["id"])
+                                    player.attempts += 1
+                                    player.save()
                                 else:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} yep, that\'s the right number ( {t_message["text"].split()[1]} )', t_chat["id"])
                                     del chat.number_number_game
@@ -90,11 +90,10 @@ class BotView(View):
                                     player.save()
                                     players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
                                     for player_id in players_ids:
-                                        Member.objects.filter(pk=player_id).update(attempts=0)
-                                    
+                                        Member.objects.filter(pk=player_id).update(attempts=0)        
                             
                         except ValueError:
-                            self.send_message("you must enter an integer", t_chat["id"])
+                            self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must enter an integer', t_chat["id"])
                         except KeyError:
                             self.send_message("There's no number to guess! say /number to start", t_chat["id"])
                         except IndexError:
@@ -106,9 +105,12 @@ class BotView(View):
                         players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
                         for player_id in players_ids:
                             Member.objects.filter(pk=player_id).update(attempts=0)
-                            self.send_message("Now there is no game active", t_chat["id"])
+                        self.send_message("Now there is no game active", t_chat["id"])
+                        return JsonResponse({"ok": "POST request processed"})
+                    elif command == "/stats":
+                        self.send_message("There is a game in progress. Please ask for stats when the game is finished", chat_id)
                     else:
-                        self.send_message("idk", t_chat["id"])
+                        self.send_message("Unrecognized command", t_chat["id"])
                 
                 else:
                     if command == "/stats":
@@ -139,13 +141,21 @@ class BotView(View):
                             self.send_message(" Number game started, guess the number!", t_chat["id"])
                         except IndexError:
                             self.send_message("Missing game configuration", t_chat["id"])
+                    else:
+                        if command in playing:
+                            self.send_message("There is no game active", t_chat["id"])
+                        else:
+                            self.send_message("Unrecognized command", t_chat["id"])
                 
 
             else:
-                self.send_message("I don´t understand", t_chat["id"])
+                # self.send_message("I don´t understand", t_chat["id"])
+                return JsonResponse({"ok": "POST request processed"})
         
         except KeyError:
             print(KeyError)
+            return JsonResponse({"ok": "POST request processed"})
+        except (ConnectionAbortedError, ConnectionError):
             return JsonResponse({"ok": "POST request processed"})
         
 
