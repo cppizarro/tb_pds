@@ -88,9 +88,9 @@ class BotView(View):
             else:
                 if command == "/number":
                     try:
+                        numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
                         chat.active_game = "number"
                         chat.save()
-                        numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
                         self.send_message(" Number game started, guess the number!", t_chat["id"])
                         print(numbers)
                     except IndexError:
