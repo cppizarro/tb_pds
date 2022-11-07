@@ -6,7 +6,7 @@ class Chat(models.Model):
     chat_id = models.IntegerField()
     active_game = models.TextField(default="None")
     attempts_number_game = models.IntegerField(default=3)
-    # number_number_game = models.IntegerField(default=0)
+    number_number_game = models.IntegerField(default=0)
     
 
 class Member(models.Model):
