@@ -109,7 +109,23 @@ class BotView(View):
                     self.send_message("idk", t_chat["id"])
             
             else:
-                if command == "/number":
+                if command == "/stats":
+                    players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                    players = {}
+                    for player_id in players_ids:
+                        player_ = Member.objects.get(pk=player_id)
+                        players[player_.name] = player_.games_won
+                    players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
+                    players =dict(reversed(list(players.items())))
+                    stats_string = str()
+                    pos = 1
+                    for key, value in players.items():
+                        stats_string += f'{pos}. {key} -> {value}\n'
+                        pos += 1
+                    stats_string = stats_string.rstrip("\n")
+                    print(stats_string)
+                    self.send_message(stats_string, t_chat["id"])
+                elif command == "/number":
                     try:
                         # numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
                         attempts = int(command_args[1])
