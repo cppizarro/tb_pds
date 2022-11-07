@@ -123,7 +123,6 @@ class BotView(View):
                         stats_string += f'{pos}. {key} -> {value}\n'
                         pos += 1
                     stats_string = stats_string.rstrip("\n")
-                    print(stats_string)
                     self.send_message(stats_string, t_chat["id"])
                 elif command == "/number":
                     try:
@@ -141,37 +140,6 @@ class BotView(View):
         else:
             self.send_message("I don´t understand", t_chat["id"])
         
-        
-        
-
-
-
-
-        # text = text.lstrip("/")
-        # chat = tb_tutorial_collection.find_one({"chat_id": t_chat["id"]})
-        # if not chat:
-        #     chat = {
-        #         "chat_id": t_chat["id"],
-        #         "counter": 0
-        #     }
-        #     response = tb_tutorial_collection.insert_one(chat)
-        #     # we want chat obj to be the same as fetched from collection
-        #     chat["_id"] = response.inserted_id
-
-        # if text == "+":
-        #     chat["counter"] += 1
-        #     tb_tutorial_collection.save(chat)
-        #     msg = f"Number of '+' messages that were parsed: {chat['counter']}"
-        #     self.send_message(msg, t_chat["id"])
-        # elif text == "restart":
-        #     blank_data = {"counter": 0}
-        #     chat.update(blank_data)
-        #     tb_tutorial_collection.save(chat)
-        #     msg = "The Tutorial bot was restarted"
-        #     self.send_message(msg, t_chat["id"])
-        # else:
-        #     msg = "Unknown command"
-        #     self.send_message(msg, t_chat["id"])
 
         return JsonResponse({"ok": "POST request processed"})
 
