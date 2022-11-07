@@ -13,8 +13,7 @@ import random
 TELEGRAM_URL = "https://api.telegram.org/bot"
 TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
-active_game = None
-# games = ["/number", "/trivia"]
+# active_game = None
 numbers = dict()
 
 # https://api.telegram.org/bot<5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8>/setWebhook?url=<url>/webhook/
@@ -24,6 +23,8 @@ class BotView(View):
         t_message = t_data["message"]
         t_chat = t_message["chat"]
         is_command = False
+        games = ["/number", "/trivia"]
+        playing = ["/n", "/t"]
 
         print("data: ", t_data)
 
@@ -60,39 +61,41 @@ class BotView(View):
             command_args = t_message["text"].split()[1:]
             print(command, command_args)
 
-            if command == "/number":
-                try:
-                    chat.active_game = "number"
-                    chat.save()
-                    numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
-                    self.send_message(" Number game started, guess the number!", t_chat["id"])
-                    print(numbers)
-                except IndexError:
-                    self.send_message("Missing game configuration", t_chat["id"])
-            elif command == "/n":
-                # if active_game != "number":
-                #     "There's no number to guess! say /number to start"
-                # else:
-                try:
-                    user_message = int(command_args[0])
-                    if user_message > numbers[t_chat["id"]]:
-                        self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
-                    elif user_message < numbers[t_chat["id"]]:
-                        self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is smaller than mine', t_chat["id"])
-                    else:
-                        self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} yep, that\'s the right number ( {t_message["text"].split()[1]} )', t_chat["id"])
-                        del numbers[chat_id]
-                        chat.active_game = "None"
-                        chat.save()
-                except ValueError:
-                    self.send_message("you must enter an integer", t_chat["id"])
-                except KeyError:
-                    self.send_message("There's no number to guess! say /number to start", t_chat["id"])
-                except IndexError:
-                    self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
+            if chat.active_game != "None":
+                if command in games:
+                    self.send_message("A game is already active.", chat_id)
+                elif command == "/n":
+                    try:
+                        user_message = int(command_args[0])
+                        if user_message > numbers[t_chat["id"]]:
+                            self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
+                        elif user_message < numbers[t_chat["id"]]:
+                            self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is smaller than mine', t_chat["id"])
+                        else:
+                            self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} yep, that\'s the right number ( {t_message["text"].split()[1]} )', t_chat["id"])
+                            del numbers[chat_id]
+                            chat.active_game = "None"
+                            chat.save()
+                    except ValueError:
+                        self.send_message("you must enter an integer", t_chat["id"])
+                    except KeyError:
+                        self.send_message("There's no number to guess! say /number to start", t_chat["id"])
+                    except IndexError:
+                        self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
+                else:
+                    self.send_message("idk", t_chat["id"])
+            
             else:
-                self.send_message("idk", t_chat["id"])
-
+                if command == "/number":
+                    try:
+                        chat.active_game = "number"
+                        chat.save()
+                        numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
+                        self.send_message(" Number game started, guess the number!", t_chat["id"])
+                        print(numbers)
+                    except IndexError:
+                        self.send_message("Missing game configuration", t_chat["id"])
+            
 
         else:
             self.send_message("I don´t understand", t_chat["id"])
