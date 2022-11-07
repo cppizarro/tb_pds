@@ -15,7 +15,8 @@ TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
 # numbers = dict()
 
-# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=<url>/webhook/
+# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://f990-2800-300-8241-81a0-00-4.sa.ngrok.io/webhook/
+# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://project4pds.herokuapp.com/webhook/
 class BotView(View):
     def post(self, request, *args, **kwargs):
         try:
