@@ -47,7 +47,7 @@ class BotView(View):
                 new_member = Member(chat = chat, name = f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
                 new_member.save()
 
-            player = chat.member.get(name=f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
+            player = Member.objects.get(chat =chat, name=f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
 
 
             try:
@@ -64,7 +64,10 @@ class BotView(View):
                 command_args = t_message["text"].split()[1:]
                 print(command, command_args)
 
-                if chat.active_game != "None":
+                if command == "/help":
+                    self.send_message("Available Commands :- \n /number - To play guess the number game\n /n - To send number when number game is active \n /stats - To see statistics\n", t_chat["id"])
+
+                elif chat.active_game != "None":
                     if command in games:
                         self.send_message("A game is already active.", chat_id)
                     elif command == "/n":
