@@ -99,6 +99,14 @@ class BotView(View):
                             self.send_message("There's no number to guess! say /number to start", t_chat["id"])
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
+
+                    elif command == "/stop":
+                        chat.active_game = "None"
+                        chat.save()
+                        players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                        for player_id in players_ids:
+                            Member.objects.filter(pk=player_id).update(attempts=0)
+                            self.send_message("Now there is no game active", t_chat["id"])
                     else:
                         self.send_message("idk", t_chat["id"])
                 
@@ -118,6 +126,8 @@ class BotView(View):
                             pos += 1
                         stats_string = stats_string.rstrip("\n")
                         self.send_message(stats_string, t_chat["id"])
+                    elif command == "/stop":
+                        self.send_message("There is no game active.", chat_id)
                     elif command == "/number":
                         try:
                             # numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
