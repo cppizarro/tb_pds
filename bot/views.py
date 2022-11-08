@@ -87,7 +87,6 @@ class BotView(View):
                                     player.save()
                                 else:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} yep, that\'s the right number ( {t_message["text"].split()[1]} )', t_chat["id"])
-                                    # del chat.number_number_game
                                     chat.active_game = "None"
                                     chat.save()
                                     player.games_won += 1
@@ -145,6 +144,30 @@ class BotView(View):
                             self.send_message(" Number game started, guess the number!", t_chat["id"])
                         except IndexError:
                             self.send_message("Missing game configuration", t_chat["id"])
+                        except ValueError:
+                            self.send_message("Configurations must be numbers", t_chat["id"])
+                    elif command == "/trivia":
+                        try:
+                            mode = command_args[0]
+                            if mode == "first" or mode == "time": 
+                                limit = int(command_args[1])
+                                chat.trivia_mode = mode
+                                api_url = 'https://the-trivia-api.com/api/questions?limit={}'.format(limit)
+                                response = requests.get(api_url)
+                                if response.status_code == requests.codes.ok:
+                                    json_questions = json.loads(response.text)
+                                    chat.trivia_questions = json_questions
+                                    chat.save()
+                                    self.send_message("Trivia game started!", t_chat["id"])
+                                else:
+                                    print("Error:", response.status_code, response.text)
+                            else:
+                                self.send_message("Nonexistent mode", t_chat["id"])
+                        except IndexError:
+                            self.send_message("Missing game configuration", t_chat["id"])
+                        except ValueError:
+                            self.send_message("Last configuration must be a number", t_chat["id"])
+
                     else:
                         if command in playing:
                             self.send_message("There is no game active", t_chat["id"])

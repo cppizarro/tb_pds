@@ -7,6 +7,9 @@ class Chat(models.Model):
     active_game = models.TextField(default="None")
     attempts_number_game = models.IntegerField(default=3)
     number_number_game = models.IntegerField(default=0)
+    trivia_mode = models.TextField(blank=True)
+    trivia_number_of_questions = models.IntegerField(default=1)
+    trivia_questions = models.JSONField(default=dict())
     
 
 class Member(models.Model):
