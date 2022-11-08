@@ -4,6 +4,7 @@ from django.db import models
 
 class Chat(models.Model):
     chat_id = models.IntegerField()
+    chat_name = models.TextField(default="no name")
     active_game = models.TextField(default="None")
     attempts_number_game = models.IntegerField(default=3)
     number_number_game = models.IntegerField(default=0)

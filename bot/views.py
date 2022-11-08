@@ -35,7 +35,10 @@ class BotView(View):
                 print("existo")
             else:
                 print("no existo")
-                new_chat = Chat(chat_id = chat_id)
+                if t_chat["type"] == "group":
+                    new_chat = Chat(chat_id = chat_id, chat_name = t_chat["title"])
+                else:
+                    new_chat = Chat(chat_id = chat_id, chat_name = f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}')
                 new_chat.save()
 
             chat = Chat.objects.get(chat_id=chat_id)
@@ -211,5 +214,29 @@ class BotView(View):
 
 
     def get(self, request):
-        # return render(request, 'stats.html')
-        return JsonResponse({"ok": "GET request processed"})
+        all_chats_id = list(Chat.objects.all().values_list('pk', flat=True))
+        stats = {}
+        for id in all_chats_id:
+            chat = Chat.objects.get(pk = id)
+            players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+            players = {}
+            for player_id in players_ids:
+                player_ = Member.objects.get(pk=player_id)
+                players[player_.name] = player_.games_won
+            players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
+            players =dict(reversed(list(players.items())))
+            stats_string = str()
+            pos = 1
+            for key, value in players.items():
+                stats_string += f'{pos}. {key} -> {value}\n'
+                pos += 1
+            stats_string = stats_string.rstrip("\n")
+            stats[chat.chat_name] = stats_string
+        
+        print(stats)
+
+        context = {
+            'stats':stats
+        }
+        return render(request, 'stats.html', context)
+        # return JsonResponse({"ok": "GET request processed"})
