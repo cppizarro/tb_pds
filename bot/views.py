@@ -87,7 +87,7 @@ class BotView(View):
                                     player.save()
                                 else:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} yep, that\'s the right number ( {t_message["text"].split()[1]} )', t_chat["id"])
-                                    del chat.number_number_game
+                                    # del chat.number_number_game
                                     chat.active_game = "None"
                                     chat.save()
                                     player.games_won += 1
