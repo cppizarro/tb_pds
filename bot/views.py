@@ -102,6 +102,12 @@ class BotView(View):
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
 
+                    elif command == "/t":
+                        if chat.trivia_mode == "first":
+                            print(chat.trivia_questions[0])
+                        elif chat.trivia_mode == "time":
+                            return JsonResponse({"ok": "POST request processed"})
+
                     elif command == "/stop":
                         chat.active_game = "None"
                         chat.save()
@@ -156,11 +162,14 @@ class BotView(View):
                                 response = requests.get(api_url)
                                 if response.status_code == requests.codes.ok:
                                     json_questions = json.loads(response.text)
+                                    chat.trivia_number_of_questions = limit
                                     chat.trivia_questions = json_questions
+                                    chat.active_game = "trivia"
                                     chat.save()
                                     self.send_message("Trivia game started!", t_chat["id"])
                                 else:
                                     print("Error:", response.status_code, response.text)
+                                    return JsonResponse({"ok": "POST request processed"})
                             else:
                                 self.send_message("Nonexistent mode", t_chat["id"])
                         except IndexError:
