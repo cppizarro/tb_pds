@@ -16,7 +16,21 @@
     </div>
     <div>
         <div class="d-flex justify-content-left">
-            {{stats}}
+            <table>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Stats</th>
+                </tr>
+                {% for value in stats.values %}
+                <tr>
+                    {% for v in value %}
+                    <td>
+                        {{ v }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {%endfor%}
+            </table>
         </div>
     </div>
 </div>
