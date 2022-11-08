@@ -248,3 +248,6 @@ class BotView(View):
         }
         return render(request, 'stats.html', context)
         # return JsonResponse({"ok": "GET request processed"})
+
+def Home(request):
+    return render(request, 'home.html')
