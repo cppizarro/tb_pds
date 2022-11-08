@@ -231,7 +231,7 @@ class BotView(View):
                 stats_string += f'{pos}. {key} -> {value}\n'
                 pos += 1
             stats_string = stats_string.rstrip("\n")
-            stats[chat.chat_name] = stats_string
+            stats[chat.chat_id] = [chat.chat_name, stats_string]
         
         print(stats)
 
