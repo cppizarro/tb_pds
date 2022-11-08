@@ -57,7 +57,6 @@ class BotView(View):
                 entities = t_message["entities"]
                 if entities[0]["type"] == "bot_command":
                     is_command = True
-                print("ent: ", is_command)
             except KeyError:
                 print("no hay entities")
 
@@ -237,11 +236,7 @@ class BotView(View):
                 stats_dict[f'{pos}) {key}'] = value
                 pos += 1
 
-            print(id)
-          
             stats.append({"chat_name":chat.chat_name, "stats":stats_dict})
-
-        print(stats)
 
         context = {
             'stats':stats

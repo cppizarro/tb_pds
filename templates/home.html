@@ -2,7 +2,7 @@
     <!-- USE DEVELOPMENT VERSION -->
     <meta charset="utf-8">
     {% load static %}
-    <!-- <link rel="stylesheet" href="{% static 'css/base.css' %}"/> -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
     <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
   
     <title>Proyecto de Desarrollo de Sotfware - Proyecto 4</title>
@@ -19,8 +19,8 @@
             <h2> Welcome to the telegram bot stats</h2>
         </div>
 
-        <div class="d-flex justify-content-left">
-            <button class="btn btn-primary" type="button" onclick="location.href='{% url 'stats' %}'">
+        <div class="wrapper">
+            <button class="button-23" role="button" onclick="location.href='{% url 'stats' %}'">
                 View Stats 
             </button>
         </div>
