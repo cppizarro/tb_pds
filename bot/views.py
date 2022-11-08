@@ -215,7 +215,7 @@ class BotView(View):
 
     def get(self, request):
         all_chats_id = list(Chat.objects.all().values_list('pk', flat=True))
-        stats = {}
+        stats = []
         for id in all_chats_id:
             chat = Chat.objects.get(pk = id)
             players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
@@ -231,8 +231,18 @@ class BotView(View):
                 stats_string += f'{pos}. {key} -> {value}\n'
                 pos += 1
             stats_string = stats_string.rstrip("\n")
-            stats[chat.chat_id] = [chat.chat_name, stats_string]
-    
+            stats_dict = {}
+            pos = 1
+            for key, value in players.items():
+                stats_dict[f'{pos}. {key}'] = value
+                pos += 1
+
+            print(id)
+          
+            stats.append({"chat_name":chat.chat_name, "stats":stats_dict})
+
+        print(stats)
+
         context = {
             'stats':stats
         }

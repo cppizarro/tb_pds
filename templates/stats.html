@@ -21,13 +21,23 @@
                     <th>Group Name</th>
                     <th>Stats</th>
                 </tr>
-                {% for value in stats.values %}
+
+                {% for item in stats %}
                 <tr>
-                    {% for v in value %}
-                    <td>
-                        {{ v }}
-                    </td>
-                    {% endfor %}
+                    {%for key,value in item.items%}
+                        {%if key == "chat_name"%}
+                        <td>
+                            {{ value }}
+                        </td>
+                        {%elif key == "stats"%}
+                        <td>
+                            {%for k, v in value.items%}
+                                {{ k }} {{ v }} <br>
+                            {%endfor%}
+                        </td>
+                        {%endif%}
+                    {%endfor%}
+                    
                 </tr>
                 {%endfor%}
             </table>
