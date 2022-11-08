@@ -234,7 +234,7 @@ class BotView(View):
             stats_dict = {}
             pos = 1
             for key, value in players.items():
-                stats_dict[f'{pos}. {key}'] = value
+                stats_dict[f'{pos}) {key}'] = value
                 pos += 1
 
             print(id)
