@@ -10,6 +10,9 @@ from bot.models import Chat, Member
 
 import random
 
+# reemplazar en todos los query t_message["from"] por t_chat
+# ver como hacer trivia
+
 TELEGRAM_URL = "https://api.telegram.org/bot"
 TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
@@ -72,7 +75,20 @@ class BotView(View):
                 elif chat.active_game != "None":
                     if command in games:
                         self.send_message("A game is already active.", chat_id)
-                    elif command == "/n":
+                    elif command == "/stop":
+                        chat.active_game = "None"
+                        chat.save()
+                        players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                        for player_id in players_ids:
+                            Member.objects.filter(pk=player_id).update(attempts=0)
+                        self.send_message("Now there is no game active", t_chat["id"])
+                        return JsonResponse({"ok": "POST request processed"})
+                    elif command == "/stats":
+                        self.send_message("There is a game in progress. Please ask for stats when the game is finished", chat_id)
+                    else:
+                        self.send_message("Unrecognized command", t_chat["id"])
+                    
+                    if command == "/n":
                         try:
                             user_message = int(command_args[0])
                             if player.attempts >= chat.attempts_number_game:
@@ -104,24 +120,41 @@ class BotView(View):
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
 
-                    elif command == "/t":
-                        if chat.trivia_mode == "first":
-                            print(chat.trivia_questions[0])
-                        elif chat.trivia_mode == "time":
-                            return JsonResponse({"ok": "POST request processed"})
+                    if chat.active_game == "trivia":
+                        if command == "/t":
+                            question_number = chat.actual_question_number
+                            question = chat.trivia_questions[question_number]["question"]
+                            correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
+                            alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
+                            alternatives.append(correct_answer)
+                            random.shuffle(alternatives)
+                            print(alternatives)
+                            if chat.trivia_mode == "first":
+                                if question_number < chat.trivia_number_of_questions:
+                                    question = chat.trivia_questions[question_number]["question"]
+                                    correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
+                                    alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
+                                    alternatives.append(correct_answer)
+                                    random.shuffle(alternatives)
+                                    print(alternatives)
+                                    # if len(command_args) == 0:
+                                    #     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
+                                    # else:
+                                    #     answer = ' '.join(command_args)
+                                    #     print(answer)
+                                    #     if answer == correct_answer:
+                                    #         self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, that is the correct answer', t_chat["id"])
+                                    #         chat.actual_question += 1
+                                    #         chat.save()
+                                    #         self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
 
-                    elif command == "/stop":
-                        chat.active_game = "None"
-                        chat.save()
-                        players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
-                        for player_id in players_ids:
-                            Member.objects.filter(pk=player_id).update(attempts=0)
-                        self.send_message("Now there is no game active", t_chat["id"])
-                        return JsonResponse({"ok": "POST request processed"})
-                    elif command == "/stats":
-                        self.send_message("There is a game in progress. Please ask for stats when the game is finished", chat_id)
-                    else:
-                        self.send_message("Unrecognized command", t_chat["id"])
+
+                                    question_number += 1
+                            elif chat.trivia_mode == "time":
+                                return JsonResponse({"ok": "POST request processed"})
+                        else:
+                            pass
+
                 
                 else:
                     if command == "/stats":
@@ -168,7 +201,7 @@ class BotView(View):
                                     chat.trivia_questions = json_questions
                                     chat.active_game = "trivia"
                                     chat.save()
-                                    self.send_message("Trivia game started!", t_chat["id"])
+                                    self.send_message("Trivia game started! Send /t to start seeing questions", t_chat["id"])   
                                 else:
                                     print("Error:", response.status_code, response.text)
                                     return JsonResponse({"ok": "POST request processed"})
@@ -210,6 +243,41 @@ class BotView(View):
         response = requests.post(
             f"{TELEGRAM_URL}{TUTORIAL_BOT_TOKEN}/sendMessage", data=data
         )
+
+    @staticmethod
+    def tel_send_inlinebutton(chat_id, question, alternatives):
+        payload = {
+            'chat_id': chat_id,
+            'text': f'{question}',
+            'reply_markup': {
+                "resize_keyboard": True,
+                "keyboard": [
+                    [f'A) {alternatives[0]}'],
+                    [f'B) {alternatives[1]}'],
+                    [f'C) {alternatives[2]}'],
+                    [f'D) {alternatives[3]}']
+                ]
+                # "keyboard": [[
+                #     {
+                #         "text": 'A',
+                #         "callback_data": f'{alternatives[0]}'
+                #     },
+                #     {
+                #         "text":"B",
+                #         "callback_data": f'{alternatives[1]}'
+                #     },
+                #     {
+                #         "text": "C",
+                #         "callback_data": f'{alternatives[2]}'
+                #     },
+                #     {
+                #         "text": "D",
+                #         "callback_data": f'{alternatives[3]}'
+                #     }
+                # ]]
+            }
+        }
+        r = requests.post(f"{TELEGRAM_URL}{TUTORIAL_BOT_TOKEN}/sendMessage", json=payload)
 
 
     def get(self, request):
