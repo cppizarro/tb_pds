@@ -18,7 +18,7 @@ TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
 # numbers = dict()
 
-# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://f990-2800-300-8241-81a0-00-4.sa.ngrok.io/webhook/
+# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://7741-200-73-69-220.sa.ngrok.io/webhook/
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://project4pds.herokuapp.com/webhook/
 class BotView(View):
     def post(self, request, *args, **kwargs):
@@ -120,42 +120,7 @@ class BotView(View):
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
 
-                    if chat.active_game == "trivia":
-                        if command == "/t":
-                            question_number = chat.actual_question_number
-                            question = chat.trivia_questions[question_number]["question"]
-                            correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
-                            alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
-                            alternatives.append(correct_answer)
-                            random.shuffle(alternatives)
-                            print(alternatives)
-                            if chat.trivia_mode == "first":
-                                if question_number < chat.trivia_number_of_questions:
-                                    question = chat.trivia_questions[question_number]["question"]
-                                    correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
-                                    alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
-                                    alternatives.append(correct_answer)
-                                    random.shuffle(alternatives)
-                                    print(alternatives)
-                                    # if len(command_args) == 0:
-                                    #     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
-                                    # else:
-                                    #     answer = ' '.join(command_args)
-                                    #     print(answer)
-                                    #     if answer == correct_answer:
-                                    #         self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, that is the correct answer', t_chat["id"])
-                                    #         chat.actual_question += 1
-                                    #         chat.save()
-                                    #         self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
 
-
-                                    question_number += 1
-                            elif chat.trivia_mode == "time":
-                                return JsonResponse({"ok": "POST request processed"})
-                        else:
-                            pass
-
-                
                 else:
                     if command == "/stats":
                         players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
@@ -200,8 +165,17 @@ class BotView(View):
                                     chat.trivia_number_of_questions = limit
                                     chat.trivia_questions = json_questions
                                     chat.active_game = "trivia"
+                                    self.send_message("Trivia game started!", t_chat["id"])   
+                                    question_number = chat.actual_question_number
+                                    question = chat.trivia_questions[question_number]["question"]
+                                    correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
+                                    chat.tivia_correct_answer = correct_answer
                                     chat.save()
-                                    self.send_message("Trivia game started! Send /t to start seeing questions", t_chat["id"])   
+                                    alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
+                                    alternatives.append(correct_answer)
+                                    random.shuffle(alternatives)
+                                    print(alternatives)
+                                    self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
                                 else:
                                     print("Error:", response.status_code, response.text)
                                     return JsonResponse({"ok": "POST request processed"})
@@ -220,7 +194,23 @@ class BotView(View):
                 
 
             else:
-                # self.send_message("I don´t understand", t_chat["id"])
+                # trvia aqui ¿?
+                message = t_message["text"].split()
+                print(message)
+                if chat.active_game == "trivia":
+                    if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
+                        print("aqui")
+                        message.pop(0)
+                        print(message)
+                        answer = ' '.join(message)
+                        print(answer)
+                        print(chat.tivia_correct_answer)
+                        if answer == correct_answer:
+                            print("correcto!")
+                    else:
+                        print("nada")
+                else:
+                    self.send_message("I don´t understand", t_chat["id"])
                 return JsonResponse({"ok": "POST request processed"})
         
         except KeyError:
@@ -314,3 +304,9 @@ class BotView(View):
 
 def Home(request):
     return render(request, 'home.html')
+
+
+
+
+# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://botapp.loca.lt/webhook/
+# lt --port 8000 --subdomain botapp
