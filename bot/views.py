@@ -202,43 +202,47 @@ class BotView(View):
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
                         # TODO: usuario respondió cambiar en base de datos
-                        if player.answered_trivia == False:
-                            # player.answered_trivia = True
-                            print("aqui")
-                            message.pop(0)
-                            print(message)
-                            answer = ' '.join(message)
-                            print(answer)
-                            print(chat.tivia_correct_answer)
-                            if answer == chat.tivia_correct_answer:
-                                print("correcto!")
-                                # TODO: cambiar base de datos trivia
-                                chat.actual_question_number += 1
-                                chat.save()
-                                player.trivia_points += 1
-                                player.save()
-                                print(chat.actual_question_number)
-                                if chat.actual_question_number  == chat.trivia_number_of_questions:
-                                    chat.active_game = "None"
-                                    chat.actual_question_number = 0
+                        if chat.trivia_mode == "first":
+                            if player.answered_trivia == False:
+                                # player.answered_trivia = True
+                                print("aqui")
+                                message.pop(0)
+                                print(message)
+                                answer = ' '.join(message)
+                                print(answer)
+                                print(chat.tivia_correct_answer)
+                                if answer == chat.tivia_correct_answer:
+                                    print("correcto!")
+                                    # TODO: cambiar base de datos trivia
+                                    chat.actual_question_number += 1
                                     chat.save()
-                                    print("no more questions")
-                                    end_message = ("Trivia game finished: "+
-                                    "hols")
-                                    self.send_message(end_message, t_chat["id"])
-                                else:
-                                    question_number = chat.actual_question_number
-                                    question = chat.trivia_questions[question_number]["question"]
-                                    correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
-                                    chat.tivia_correct_answer = correct_answer
-                                    chat.save()
-                                    alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
-                                    alternatives.append(correct_answer)
-                                    random.shuffle(alternatives)
-                                    print(correct_answer)
-                                    self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
-                        else:
-                            self.send_message("You've already answered the question", t_chat["id"])
+                                    player.trivia_points += 1
+                                    player.save()
+                                    print(chat.actual_question_number)
+                                    if chat.actual_question_number  == chat.trivia_number_of_questions:
+                                        chat.active_game = "None"
+                                        chat.actual_question_number = 0
+                                        chat.save()
+                                        print("no more questions")
+                                        # TODO: puntajes trivia
+                                        end_message = ("Trivia game finished: rankikng")
+                                        self.send_message(end_message, t_chat["id"])
+                                    else:
+                                        question_number = chat.actual_question_number
+                                        question = chat.trivia_questions[question_number]["question"]
+                                        correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
+                                        chat.tivia_correct_answer = correct_answer
+                                        chat.save()
+                                        alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
+                                        alternatives.append(correct_answer)
+                                        random.shuffle(alternatives)
+                                        print(correct_answer)
+                                        self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
+                            else:
+                                self.send_message("You've already answered the question", t_chat["id"])
+                        elif chat.trivia_mode == "time":
+                            #TODO: trivia time mode
+                            pass
                     else:
                         print("nada")
                 else:
