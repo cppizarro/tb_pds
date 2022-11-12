@@ -293,6 +293,8 @@ class BotView(View):
                                     already_answered += 1
                             if already_answered == number_of_players:
                                 self.send_message(f'No one guessed the question: ( {chat.tivia_correct_answer} )', t_chat["id"])
+                                # TODO: finalizar juego o pasar pregunta bien
+                                #FIXME: cuando alguien responde despues de que alguien mas envio la respuesta correcta
                                 # chat.actual_question_number += 1
                                 # chat.save()
                                 # if chat.actual_question_number  == chat.trivia_number_of_questions:
