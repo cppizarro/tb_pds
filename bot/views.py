@@ -177,6 +177,7 @@ class BotView(View):
                                 for player_id in players_ids:
                                     player_ = Member.objects.get(pk=player_id)
                                     player_.trivia_points = 0
+                                    player_.answered_trivia = False
                                     player_.save()
                                 limit = int(command_args[1])
                                 chat.trivia_mode = mode
@@ -219,11 +220,11 @@ class BotView(View):
                 print(message)
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
-                        # TODO: usuario respondió cambiar en base de datos
                         # TODO una vez que ya respondieron todos cambiar la pregunta
                         if chat.trivia_mode == "first":
                             if player.answered_trivia == False:
-                                # player.answered_trivia = True
+                                player.answered_trivia = True
+                                player.save()
                                 message.pop(0)
                                 print(message)
                                 answer = ' '.join(message)
@@ -264,6 +265,11 @@ class BotView(View):
                                         end_message = (f'Trivia game finished:\n {trivia_points_string}')
                                         self.send_message(end_message, t_chat["id"])
                                     else:
+                                        players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                        for player_id in players_ids:
+                                            player_ = Member.objects.get(pk=player_id)
+                                            player_.answered_trivia = False
+                                            player_.save()
                                         question_number = chat.actual_question_number
                                         question = chat.trivia_questions[question_number]["question"]
                                         correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
@@ -276,6 +282,63 @@ class BotView(View):
                                         self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
                             else:
                                 self.send_message("You've already answered the question", t_chat["id"])
+
+                            players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                            number_of_players = len(players_ids)
+                            already_answered = 0
+                            for player_id in players_ids:
+                                player_ = Member.objects.get(pk=player_id)
+                                answered = player_.answered_trivia 
+                                if answered == True:
+                                    already_answered += 1
+                            if already_answered == number_of_players:
+                                self.send_message(f'No one guessed the question: ( {chat.tivia_correct_answer} )', t_chat["id"])
+                                # chat.actual_question_number += 1
+                                # chat.save()
+                                # if chat.actual_question_number  == chat.trivia_number_of_questions:
+                                #     chat.active_game = "None"
+                                #     chat.actual_question_number = 0
+                                #     chat.save()                                      
+                                #     players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                #     players = {}
+                                #     id_and_name = {}
+                                #     for player_id in players_ids:
+                                #         player_ = Member.objects.get(pk=player_id)
+                                #         players[player_.name] = player_.trivia_points
+                                #         id_and_name[player_.name] = player_id
+                                #     players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
+                                #     players =dict(reversed(list(players.items())))
+                                #     keys = list(players.keys())
+                                #     winner_id = id_and_name[keys[0]]
+                                #     winner = Member.objects.get(pk=winner_id)
+                                #     winner.trivia_games_won += 1
+                                #     winner.games_won += 1
+                                #     winner.save()
+                                #     trivia_points_string = str()
+                                #     pos = 1
+                                #     for key, value in players.items():
+                                #         trivia_points_string += f'{pos}. {key} -> {value}\n'
+                                #         pos += 1
+                                #     trivia_points_string = trivia_points_string.rstrip("\n")
+                                #     end_message = (f'Trivia game finished:\n {trivia_points_string}')
+                                #     self.send_message(end_message, t_chat["id"])
+                                # else:
+                                #     for player_id in players_ids:
+                                #         player_ = Member.objects.get(pk=player_id)
+                                #         player_.answered_trivia = False
+                                #         player_.save()
+                                #     question_number = chat.actual_question_number
+                                #     question = chat.trivia_questions[question_number]["question"]
+                                #     correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
+                                #     chat.tivia_correct_answer = correct_answer
+                                #     chat.save()
+                                #     alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
+                                #     alternatives.append(correct_answer)
+                                #     random.shuffle(alternatives)
+                                #     print(correct_answer)
+                                #     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
+                                    
+
                         elif chat.trivia_mode == "time":
                             #TODO: trivia time mode
                             pass
