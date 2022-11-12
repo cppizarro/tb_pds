@@ -248,7 +248,10 @@ class BotView(View):
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
                         self.send_message("There is no trivia game active", t_chat["id"])
                     else:
-                        self.send_message("I don´t understand", t_chat["id"])
+                        if "Hola" or "hola" in message:
+                            self.send_message(f'Hello {t_message["from"]["first_name"]} {t_message["from"]["last_name"]}!')
+                        else:
+                            self.send_message("I don´t understand", t_chat["id"])
                 return JsonResponse({"ok": "POST request processed"})
         
         except KeyError:
