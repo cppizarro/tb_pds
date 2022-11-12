@@ -20,6 +20,7 @@ TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://7741-200-73-69-220.sa.ngrok.io/webhook/
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://project4pds.herokuapp.com/webhook/
+# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://botapp.loca.lt/webhook/
 class BotView(View):
     def post(self, request, *args, **kwargs):
         try:
@@ -85,10 +86,9 @@ class BotView(View):
                         return JsonResponse({"ok": "POST request processed"})
                     elif command == "/stats":
                         self.send_message("There is a game in progress. Please ask for stats when the game is finished", chat_id)
-                    else:
-                        self.send_message("Unrecognized command", t_chat["id"])
                     
-                    if command == "/n":
+                    elif command == "/n":
+                        # TODO: stop number game when no more users have more attempts
                         try:
                             user_message = int(command_args[0])
                             if player.attempts >= chat.attempts_number_game:
@@ -119,6 +119,9 @@ class BotView(View):
                             self.send_message("There's no number to guess! say /number to start", t_chat["id"])
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
+
+                    else:
+                        self.send_message("Unrecognized command", t_chat["id"])
 
 
                 else:
@@ -174,7 +177,6 @@ class BotView(View):
                                     alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
                                     alternatives.append(correct_answer)
                                     random.shuffle(alternatives)
-                                    print(alternatives)
                                     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
                                 else:
                                     print("Error:", response.status_code, response.text)
@@ -190,7 +192,7 @@ class BotView(View):
                         if command in playing:
                             self.send_message("There is no game active", t_chat["id"])
                         else:
-                            self.send_message("Unrecognized command", t_chat["id"])
+                            self.send_message("Unrecognized command 1", t_chat["id"])
                 
 
             else:
@@ -199,14 +201,40 @@ class BotView(View):
                 print(message)
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
-                        print("aqui")
-                        message.pop(0)
-                        print(message)
-                        answer = ' '.join(message)
-                        print(answer)
-                        print(chat.tivia_correct_answer)
-                        if answer == correct_answer:
-                            print("correcto!")
+                        # TODO: usuario respondió cambiar en base de datos
+                        if player.answered_trivia == False:
+                            # player.answered_trivia = True
+                            print("aqui")
+                            message.pop(0)
+                            print(message)
+                            answer = ' '.join(message)
+                            print(answer)
+                            print(chat.tivia_correct_answer)
+                            if answer == chat.tivia_correct_answer:
+                                print("correcto!")
+                                # TODO: cambiar base de datos trivia
+                                chat.actual_question_number += 1
+                                chat.save()
+                                print(chat.actual_question_number)
+                                if chat.actual_question_number  == chat.trivia_number_of_questions:
+                                    chat.active_game = "None"
+                                    chat.actual_question_number = 0
+                                    chat.save()
+                                    print("no more questions")
+                                else:
+                                    question_number = chat.actual_question_number
+                                    question = chat.trivia_questions[question_number]["question"]
+                                    correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
+                                    chat.tivia_correct_answer = correct_answer
+                                    chat.save()
+                                    alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
+                                    alternatives.append(correct_answer)
+                                    random.shuffle(alternatives)
+                                    print(alternatives)
+                                    print(correct_answer)
+                                    self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
+                        else:
+                            self.send_message("You've already answered the question")
                     else:
                         print("nada")
                 else:
