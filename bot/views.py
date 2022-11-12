@@ -196,12 +196,12 @@ class BotView(View):
                 
 
             else:
-                # trvia aqui ¿?
                 message = t_message["text"].split()
                 print(message)
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
                         # TODO: usuario respondió cambiar en base de datos
+                        # TODO una vez que ya respondieron todos cambiar la pregunta
                         if chat.trivia_mode == "first":
                             if player.answered_trivia == False:
                                 # player.answered_trivia = True
@@ -213,7 +213,6 @@ class BotView(View):
                                 print(chat.tivia_correct_answer)
                                 if answer == chat.tivia_correct_answer:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, that is the correct answer!', t_chat["id"])
-                                    # TODO: cambiar base de datos trivia
                                     chat.actual_question_number += 1
                                     chat.save()
                                     player.trivia_points += 1
@@ -321,7 +320,7 @@ class BotView(View):
             'stats':stats
         }
         return render(request, 'stats.html', context)
-        # return JsonResponse({"ok": "GET request processed"})
+
 
 def Home(request):
     return render(request, 'home.html')
