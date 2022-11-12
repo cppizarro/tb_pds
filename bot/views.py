@@ -93,7 +93,7 @@ class BotView(View):
                             user_message = int(command_args[0])
                             if player.attempts >= chat.attempts_number_game:
                                 self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
-                                # implementar fin del juego una vez que a todos se les acaban los intentos
+                                # TODO: implementar fin del juego una vez que a todos se les acaban los intentos
                             else:
                                 if user_message > chat.number_number_game:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
@@ -108,6 +108,7 @@ class BotView(View):
                                     chat.active_game = "None"
                                     chat.save()
                                     player.games_won += 1
+                                    player.number_games_won += 1
                                     player.save()
                                     players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
                                     for player_id in players_ids:
@@ -144,7 +145,6 @@ class BotView(View):
                         self.send_message("There is no game active.", chat_id)
                     elif command == "/number":
                         try:
-                            # numbers[t_chat["id"]] = random.randint(0, int(command_args[0]))
                             attempts = int(command_args[1])
                             chat.active_game = "number"
                             chat.attempts_number_game = attempts
@@ -215,12 +215,17 @@ class BotView(View):
                                 # TODO: cambiar base de datos trivia
                                 chat.actual_question_number += 1
                                 chat.save()
+                                player.trivia_points += 1
+                                player.save()
                                 print(chat.actual_question_number)
                                 if chat.actual_question_number  == chat.trivia_number_of_questions:
                                     chat.active_game = "None"
                                     chat.actual_question_number = 0
                                     chat.save()
                                     print("no more questions")
+                                    end_message = ("Trivia game finished: "+
+                                    "hols")
+                                    self.send_message(end_message, t_chat["id"])
                                 else:
                                     question_number = chat.actual_question_number
                                     question = chat.trivia_questions[question_number]["question"]
@@ -233,12 +238,12 @@ class BotView(View):
                                     print(correct_answer)
                                     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
                         else:
-                            self.send_message("You've already answered the question")
+                            self.send_message("You've already answered the question", t_chat["id"])
                     else:
                         print("nada")
                 else:
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
-                        self.send_message("There is not trivia game active", t_chat["id"])
+                        self.send_message("There is no trivia game active", t_chat["id"])
                     else:
                         self.send_message("I don´t understand", t_chat["id"])
                 return JsonResponse({"ok": "POST request processed"})
@@ -277,24 +282,6 @@ class BotView(View):
                     [f'C) {alternatives[2]}'],
                     [f'D) {alternatives[3]}']
                 ]
-                # "keyboard": [[
-                #     {
-                #         "text": 'A',
-                #         "callback_data": f'{alternatives[0]}'
-                #     },
-                #     {
-                #         "text":"B",
-                #         "callback_data": f'{alternatives[1]}'
-                #     },
-                #     {
-                #         "text": "C",
-                #         "callback_data": f'{alternatives[2]}'
-                #     },
-                #     {
-                #         "text": "D",
-                #         "callback_data": f'{alternatives[3]}'
-                #     }
-                # ]]
             }
         }
         r = requests.post(f"{TELEGRAM_URL}{TUTORIAL_BOT_TOKEN}/sendMessage", json=payload)

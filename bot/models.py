@@ -20,7 +20,9 @@ class Member(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="member")
     name = models.TextField()
     games_won = models.IntegerField(default=0)
+    number_games_won = models.IntegerField(default=0)
+    trivia_games_won = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     answered_trivia = models.BooleanField(default=False)
-
+    trivia_points = models.IntegerField(default=0)
 
