@@ -88,12 +88,25 @@ class BotView(View):
                         self.send_message("There is a game in progress. Please ask for stats when the game is finished", chat_id)
                     
                     elif command == "/n":
-                        # TODO: stop number game when no more users have more attempts
                         try:
                             user_message = int(command_args[0])
                             if player.attempts >= chat.attempts_number_game:
                                 self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
-                                # TODO: implementar fin del juego una vez que a todos se les acaban los intentos
+                                players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                number_of_players = len(players_ids)
+                                no_attempts = 0
+                                for player_id in players_ids:
+                                    player_ = Member.objects.get(pk=player_id)
+                                    att = player_.attempts 
+                                    if att >= chat.attempts_number_game:
+                                        no_attempts += 1
+                                if no_attempts == number_of_players:
+                                    self.send_message(f'Game finished, no guessed the number: ( {chat.number_number_game} )', t_chat["id"])
+                                    chat.active_game = "None"
+                                    chat.save()
+                                    players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                    for player_id in players_ids:
+                                        Member.objects.filter(pk=player_id).update(attempts=0)
                             else:
                                 if user_message > chat.number_number_game:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
@@ -158,7 +171,13 @@ class BotView(View):
                     elif command == "/trivia":
                         try:
                             mode = command_args[0]
-                            if mode == "first" or mode == "time": 
+                            if mode == "first" or mode == "time":
+                                players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                players = {}
+                                for player_id in players_ids:
+                                    player_ = Member.objects.get(pk=player_id)
+                                    player_.trivia_points = 0
+                                    player_.save()
                                 limit = int(command_args[1])
                                 chat.trivia_mode = mode
                                 api_url = 'https://the-trivia-api.com/api/questions?limit={}'.format(limit)
@@ -205,7 +224,6 @@ class BotView(View):
                         if chat.trivia_mode == "first":
                             if player.answered_trivia == False:
                                 # player.answered_trivia = True
-                                print("aqui")
                                 message.pop(0)
                                 print(message)
                                 answer = ' '.join(message)
@@ -221,10 +239,29 @@ class BotView(View):
                                     if chat.actual_question_number  == chat.trivia_number_of_questions:
                                         chat.active_game = "None"
                                         chat.actual_question_number = 0
-                                        chat.save()
-                                        print("no more questions")
-                                        # TODO: puntajes trivia
-                                        end_message = ("Trivia game finished: rankikng")
+                                        chat.save()                                      
+                                        players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                        players = {}
+                                        id_and_name = {}
+                                        for player_id in players_ids:
+                                            player_ = Member.objects.get(pk=player_id)
+                                            players[player_.name] = player_.trivia_points
+                                            id_and_name[player_.name] = player_id
+                                        players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
+                                        players =dict(reversed(list(players.items())))
+                                        keys = list(players.keys())
+                                        winner_id = id_and_name[keys[0]]
+                                        winner = Member.objects.get(pk=winner_id)
+                                        winner.trivia_games_won += 1
+                                        winner.games_won += 1
+                                        winner.save()
+                                        trivia_points_string = str()
+                                        pos = 1
+                                        for key, value in players.items():
+                                            trivia_points_string += f'{pos}. {key} -> {value}\n'
+                                            pos += 1
+                                        trivia_points_string = trivia_points_string.rstrip("\n")
+                                        end_message = (f'Trivia game finished:\n {trivia_points_string}')
                                         self.send_message(end_message, t_chat["id"])
                                     else:
                                         question_number = chat.actual_question_number
@@ -249,7 +286,7 @@ class BotView(View):
                         self.send_message("There is no trivia game active", t_chat["id"])
                     else:
                         if "Hola" or "hola" in message:
-                            self.send_message(f'Hello {t_message["from"]["first_name"]} {t_message["from"]["last_name"]}!')
+                            self.send_message(f'Hello {t_message["from"]["first_name"]} {t_message["from"]["last_name"]}!', t_chat["id"])
                         else:
                             self.send_message("I don´t understand", t_chat["id"])
                 return JsonResponse({"ok": "POST request processed"})
@@ -333,3 +370,5 @@ def Home(request):
 
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://botapp.loca.lt/webhook/
 # lt --port 8000 --subdomain botapp
+
+# tercer juego: colgado, eucaciones
