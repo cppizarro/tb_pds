@@ -212,7 +212,7 @@ class BotView(View):
                                 print(answer)
                                 print(chat.tivia_correct_answer)
                                 if answer == chat.tivia_correct_answer:
-                                    print("correcto!")
+                                    self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, that is the correct answer!', t_chat["id"])
                                     # TODO: cambiar base de datos trivia
                                     chat.actual_question_number += 1
                                     chat.save()
