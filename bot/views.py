@@ -235,11 +235,6 @@ class BotView(View):
                                 print(last_alternatives)
                                 message.pop(0)
                                 answer = ' '.join(message)
-                                if answer in last_alternatives:
-                                    player.answered_trivia = False
-                                    player.save()
-                                    self.send_message("pregunta anterior", t_chat["id"])
-                                    return JsonResponse({"ok": "POST request processed"})
                                 print(answer)
                                 print(chat.tivia_correct_answer)
                                 if answer == chat.tivia_correct_answer:
@@ -313,6 +308,11 @@ class BotView(View):
                                         self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
 
                             else:
+                                if answer in last_alternatives:
+                                    player.answered_trivia = False
+                                    player.save()
+                                    self.send_message("pregunta anterior", t_chat["id"])
+                                    return JsonResponse({"ok": "POST request processed"})
                                 self.send_message("You've already answered the question", t_chat["id"])
                                 
                                     
