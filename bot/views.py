@@ -234,6 +234,7 @@ class BotView(View):
                                     player.save()
                                     change_question = True
                                 else:
+                                    self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, incorrect answer', t_chat["id"])
                                     players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
                                     number_of_players = len(players_ids)
                                     already_answered = 0
