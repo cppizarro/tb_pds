@@ -226,13 +226,6 @@ class BotView(View):
                             if player.answered_trivia == False:
                                 player.answered_trivia = True
                                 player.save()
-                                alt_string = chat.trivia_last_alternatives.replace("'","")
-                                alt_string = alt_string.replace("[","")
-                                alt_string = alt_string.replace("]","")
-                                alt_string = alt_string.replace(" ", "")
-                                print("string: ", alt_string)
-                                last_alternatives = alt_string.split(',')
-                                print(last_alternatives)
                                 message.pop(0)
                                 answer = ' '.join(message)
                                 print(answer)
@@ -310,6 +303,13 @@ class BotView(View):
                             else:
                                 message.pop(0)
                                 answer = ' '.join(message)
+                                alt_string = chat.trivia_last_alternatives.replace("'","")
+                                alt_string = alt_string.replace("[","")
+                                alt_string = alt_string.replace("]","")
+                                alt_string = alt_string.replace(" ", "")
+                                print("string: ", alt_string)
+                                last_alternatives = alt_string.split(',')
+                                print(last_alternatives)
                                 if answer in last_alternatives:
                                     player.answered_trivia = False
                                     player.save()
