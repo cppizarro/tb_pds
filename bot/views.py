@@ -220,13 +220,12 @@ class BotView(View):
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
                         # FIXME: cuando alguien responde despues de que alguien mas envio la respuesta correcta
-                        
                         if chat.trivia_mode == "first":
                             change_question = False
                             if player.answered_trivia == False:
                                 player.answered_trivia = True
                                 player.save()
-                                alt_string = chat.trivia_actual_alternatives.replace("'","")
+                                alt_string = chat.trivia_last_alternatives.replace("'","")
                                 alt_string = alt_string.replace("[","")
                                 alt_string = alt_string.replace("]","")
                                 alt_string = alt_string.replace(" ", "")
