@@ -218,7 +218,6 @@ class BotView(View):
                 print(message)
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
-                        # FIXME: (almost done) una vez que ya respondieron todos cambiar la pregunta
                         # FIXME: cuando alguien responde despues de que alguien mas envio la respuesta correcta
                         if chat.trivia_mode == "first":
                             change_question = False
@@ -252,6 +251,7 @@ class BotView(View):
                                     chat.save()
                                     print(chat.actual_question_number)
                                     if chat.actual_question_number  == chat.trivia_number_of_questions:
+                                        #FIXME: como sumar a juegos ganados cuando ahy un empate
                                         chat.active_game = "None"
                                         chat.actual_question_number = 0
                                         chat.save()                                      
@@ -306,10 +306,11 @@ class BotView(View):
                     else:
                         print("nada")
                 else:
+                    # FIXME: cuando el bot responde hols
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
                         self.send_message("There is no trivia game active", t_chat["id"])
                     else:
-                        if "Hola" or "hola" in message:
+                        if "Hola" in message:
                             self.send_message(f'Hello {t_message["from"]["first_name"]} {t_message["from"]["last_name"]}!', t_chat["id"])
                         else:
                             self.send_message("I don´t understand", t_chat["id"])
