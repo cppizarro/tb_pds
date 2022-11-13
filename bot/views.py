@@ -191,10 +191,11 @@ class BotView(View):
                                     question = chat.trivia_questions[question_number]["question"]
                                     correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
                                     chat.tivia_correct_answer = correct_answer
-                                    chat.save()
                                     alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
                                     alternatives.append(correct_answer)
                                     random.shuffle(alternatives)
+                                    chat.trivia_actual_alternatives = alternatives
+                                    chat.save()
                                     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
                                 else:
                                     print("Error:", response.status_code, response.text)
@@ -224,8 +225,19 @@ class BotView(View):
                             if player.answered_trivia == False:
                                 player.answered_trivia = True
                                 player.save()
+                                alt_string = chat.trivia_actual_alternatives.replace("'","")
+                                alt_string = alt_string.replace("[","")
+                                alt_string = alt_string.replace("]","")
+                                alt_string = alt_string.replace(" ", "")
+                                print("string: ", alt_string)
+                                last_alternatives = alt_string.split(',')
+                                print(last_alternatives)
                                 message.pop(0)
                                 answer = ' '.join(message)
+                                if answer in last_alternatives:
+                                    player.answered_trivia = False
+                                    player.save()
+                                    return JsonResponse({"ok": "POST request processed"})
                                 print(answer)
                                 print(chat.tivia_correct_answer)
                                 if answer == chat.tivia_correct_answer:
@@ -289,10 +301,12 @@ class BotView(View):
                                         question = chat.trivia_questions[question_number]["question"]
                                         correct_answer = chat.trivia_questions[question_number]["correctAnswer"]
                                         chat.tivia_correct_answer = correct_answer
-                                        chat.save()
                                         alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
                                         alternatives.append(correct_answer)
                                         random.shuffle(alternatives)
+                                        chat.trivia_last_alternatives = chat.trivia_actual_alternatives
+                                        chat.trivia_actual_alternatives = alternatives
+                                        chat.save()
                                         print(correct_answer)
                                         self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
 
@@ -307,7 +321,6 @@ class BotView(View):
                     else:
                         print("nada")
                 else:
-                    # FIXME: cuando el bot responde hols
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
                         self.send_message("There is no trivia game active", t_chat["id"])
                     else:

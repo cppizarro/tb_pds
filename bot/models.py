@@ -15,6 +15,8 @@ class Chat(models.Model):
     trivia_questions = models.JSONField(default=dict())
     actual_question_number = models.IntegerField(default=0)
     tivia_correct_answer = models.TextField(default="")
+    trivia_actual_alternatives = models.TextField(default="")
+    trivia_last_alternatives = models.TextField(default="")
 
 class Member(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="member")
