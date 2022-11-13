@@ -45,7 +45,7 @@ class BotView(View):
 
             chat = Chat.objects.get(chat_id=chat_id)
 
-            if Member.objects.filter(chat = chat).exists() and Member.objects.filter(name = f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}').exists():
+            if Member.objects.filter(chat = chat, name = f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}').exists():
                 print("existo")
             else:
                 print("no existo")
