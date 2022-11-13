@@ -11,12 +11,10 @@ from bot.models import Chat, Member
 import random
 
 # reemplazar en todos los query t_message["from"] por t_chat
-# ver como hacer trivia
 
 TELEGRAM_URL = "https://api.telegram.org/bot"
 TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
-# numbers = dict()
 
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://7741-200-73-69-220.sa.ngrok.io/webhook/
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://project4pds.herokuapp.com/webhook/
@@ -228,7 +226,6 @@ class BotView(View):
                                 player.answered_trivia = True
                                 player.save()
                                 message.pop(0)
-                                print(message)
                                 answer = ' '.join(message)
                                 print(answer)
                                 print(chat.tivia_correct_answer)
@@ -319,7 +316,6 @@ class BotView(View):
                 return JsonResponse({"ok": "POST request processed"})
         
         except KeyError:
-            print(KeyError)
             return JsonResponse({"ok": "POST request processed"})
         except (ConnectionAbortedError, ConnectionError):
             return JsonResponse({"ok": "POST request processed"})
