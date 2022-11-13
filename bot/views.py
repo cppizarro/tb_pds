@@ -238,6 +238,7 @@ class BotView(View):
                                 if answer in last_alternatives:
                                     player.answered_trivia = False
                                     player.save()
+                                    self.send_message("pregunta anterior", t_chat["id"])
                                     return JsonResponse({"ok": "POST request processed"})
                                 print(answer)
                                 print(chat.tivia_correct_answer)
