@@ -194,6 +194,7 @@ class BotView(View):
                                     alternatives = chat.trivia_questions[question_number]["incorrectAnswers"]
                                     alternatives.append(correct_answer)
                                     random.shuffle(alternatives)
+                                    chat.actual_question_number = 0
                                     chat.trivia_actual_alternatives = alternatives
                                     chat.save()
                                     self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
