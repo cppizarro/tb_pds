@@ -308,6 +308,8 @@ class BotView(View):
                                         self.tel_send_inlinebutton(t_chat["id"], question, alternatives)
 
                             else:
+                                message.pop(0)
+                                answer = ' '.join(message)
                                 if answer in last_alternatives:
                                     player.answered_trivia = False
                                     player.save()
