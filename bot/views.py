@@ -220,7 +220,6 @@ class BotView(View):
                 print(message)
                 if chat.active_game == "trivia":
                     if message[0] == "A)" or message[0] == "B)" or message[0] == "C)" or message[0] == "D)":
-                        # FIXME: cuando alguien responde despues de que alguien mas envio la respuesta correcta
                         if chat.trivia_mode == "first":
                             change_question = False
                             if player.answered_trivia == False:
@@ -279,12 +278,26 @@ class BotView(View):
                                             id_and_name[player_.name] = player_id
                                         players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
                                         players =dict(reversed(list(players.items())))
+                                        points = list(players.values())
+                                        if len(set(points)) == 1:
+                                            if points[0] == 0:
+                                                return JsonResponse({"ok": "POST request processed"})
+                                            else: # todos tuvieron el mismo puntaje 
+                                                return JsonResponse({"ok": "POST request processed"})
                                         keys = list(players.keys())
-                                        winner_id = id_and_name[keys[0]]
-                                        winner = Member.objects.get(pk=winner_id)
-                                        winner.trivia_games_won += 1
-                                        winner.games_won += 1
-                                        winner.save()
+                                        winner_points = players[keys[0]]
+                                        winners_key = []
+                                        for key in keys:
+                                            if players[key] == winner_points:
+                                                winners_key.append(key)
+
+                                        for key in winners_key:
+                                            winner_id = id_and_name[key]
+                                            winner = Member.objects.get(pk=winner_id)
+                                            winner.trivia_games_won += 1
+                                            winner.games_won += 1
+                                            winner.save()
+                                            
                                         trivia_points_string = str()
                                         pos = 1
                                         for key, value in players.items():
