@@ -283,19 +283,21 @@ class BotView(View):
                                                 return JsonResponse({"ok": "POST request processed"})
                                             else: # todos tuvieron el mismo puntaje 
                                                 return JsonResponse({"ok": "POST request processed"})
-                                        keys = list(players.keys())
-                                        winner_points = players[keys[0]]
-                                        winners_key = []
-                                        for key in keys:
-                                            if players[key] == winner_points:
-                                                winners_key.append(key)
 
-                                        for key in winners_key:
-                                            winner_id = id_and_name[key]
-                                            winner = Member.objects.get(pk=winner_id)
-                                            winner.trivia_games_won += 1
-                                            winner.games_won += 1
-                                            winner.save()
+                                        else:
+                                            keys = list(players.keys())
+                                            winner_points = players[keys[0]]
+                                            winners_key = []
+                                            for key in keys:
+                                                if players[key] == winner_points:
+                                                    winners_key.append(key)
+
+                                            for key in winners_key:
+                                                winner_id = id_and_name[key]
+                                                winner = Member.objects.get(pk=winner_id)
+                                                winner.trivia_games_won += 1
+                                                winner.games_won += 1
+                                                winner.save()
 
                                         trivia_points_string = str()
                                         pos = 1
