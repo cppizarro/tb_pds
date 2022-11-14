@@ -265,7 +265,6 @@ class BotView(View):
                                     chat.save()
                                     print(chat.actual_question_number)
                                     if chat.actual_question_number  == chat.trivia_number_of_questions:
-                                        #FIXME: como sumar a juegos ganados cuando ahy un empate
                                         chat.active_game = "None"
                                         chat.actual_question_number = 0
                                         chat.save()                                      
@@ -297,7 +296,7 @@ class BotView(View):
                                             winner.trivia_games_won += 1
                                             winner.games_won += 1
                                             winner.save()
-                                            
+
                                         trivia_points_string = str()
                                         pos = 1
                                         for key, value in players.items():
