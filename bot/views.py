@@ -401,34 +401,44 @@ class BotView(View):
     def get(self, request):
         all_chats_id = list(Chat.objects.all().values_list('pk', flat=True))
         global_stats = []
-        # number_stats = []
-        # trivia_stats = []
-        # hangman_stats = []
         for id in all_chats_id:
             chat = Chat.objects.get(pk = id)
             players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
             players = {}
-            # number_game = {}
-            # trivia_game = {}
+            number_game = {}
+            trivia_game = {}
             # hangman_game = {}
             for player_id in players_ids:
                 player_ = Member.objects.get(pk=player_id)
                 players[player_.name] = player_.games_won
+                number_game[player_.name] = player_.number_games_won
+                trivia_game[player_.name] = player_.trivia_games_won
+
             players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
             players =dict(reversed(list(players.items())))
-            stats_string = str()
-            pos = 1
-            for key, value in players.items():
-                stats_string += f'{pos}. {key} -> {value}\n'
-                pos += 1
-            stats_string = stats_string.rstrip("\n")
             stats_dict = {}
             pos = 1
             for key, value in players.items():
                 stats_dict[f'{pos}) {key}'] = value
                 pos += 1
 
-            global_stats.append({"chat_name":chat.chat_name, "stats":stats_dict})
+            number_game = {k: v for k, v in sorted(number_game.items(), key=lambda item: item[1])}
+            number_game =dict(reversed(list(number_game.items())))
+            number_stats_dict = {}
+            pos = 1
+            for key, value in number_game.items():
+                number_stats_dict[f'{pos}) {key}'] = value
+                pos += 1
+
+            trivia_game = {k: v for k, v in sorted(trivia_game.items(), key=lambda item: item[1])}
+            trivia_game =dict(reversed(list(trivia_game.items())))
+            trivia_stats_dict = {}
+            pos = 1
+            for key, value in trivia_game.items():
+                trivia_stats_dict[f'{pos}) {key}'] = value
+                pos += 1
+
+            global_stats.append({"chat_name":chat.chat_name, "stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
 
         context = {
             'stats':global_stats

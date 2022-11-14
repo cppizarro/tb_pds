@@ -20,6 +20,8 @@
                 <tr style="border: 1px solid;">
                     <th style="border: 1px solid;">Group Name</th>
                     <th style="border: 1px solid;">Stats</th>
+                    <th style="border: 1px solid;">Number Game Stats</th>
+                    <th style="border: 1px solid;">Trivia Game Stats</th>
                 </tr>
 
                 {% for item in stats %}
@@ -45,10 +47,40 @@
                                 </tr>
                                 {%endfor%}
                             </table>
-
-                            <!-- {%for k, v in value.items%}
-                                {{ k }}&emsp;{{ v }} <br>
-                            {%endfor%} -->
+                        </td>
+                        {%elif key == "number_stats"%}
+                        <td style="border: 1px solid;">
+                            <table style="border: none;" >
+                                <tr>
+                                    <!-- <th>Position</th> -->
+                                    <th>Player Name</th>
+                                    <th>Points</th>
+                                </tr>
+                                {%for k, v in value.items%}
+                                <tr>
+                                    <!-- <td>netrg</td> -->
+                                    <td>{{ k }}</td>
+                                    <td>&emsp;{{ v }}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </td>
+                        {%elif key == "trivia_stats"%}
+                        <td style="border: 1px solid;">
+                            <table style="border: none;" >
+                                <tr>
+                                    <!-- <th>Position</th> -->
+                                    <th>Player Name</th>
+                                    <th>Points</th>
+                                </tr>
+                                {%for k, v in value.items%}
+                                <tr>
+                                    <!-- <td>netrg</td> -->
+                                    <td>{{ k }}</td>
+                                    <td>&emsp;{{ v }}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
                         </td>
                         {%endif%}
                     {%endfor%}
