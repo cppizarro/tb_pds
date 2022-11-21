@@ -451,6 +451,8 @@ def Home(request):
 
 
 
+# FIXME: cuando alguien responde despues de la respuesta correcta a veces cuenta como que respondio la siguiente pregunta
+
 
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://botapp.loca.lt/webhook/
 # lt --port 8000 --subdomain botapp
