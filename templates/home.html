@@ -22,8 +22,20 @@
 
         <div class="wrapper">
             <button class="button-23" role="button" onclick="location.href='{% url 'stats' %}'">
-                View Stats 
+                View All Stats 
             </button>
+            <div>
+                <br><br>
+                <h2> Stats by Group</h2>
+                <ul>
+                    {% for group in chats %}
+                    <button class="button-23" role="button" onclick="location.href='{% url 'group_stats' group_id=group.id %}'">
+                        {{ group.name }} 
+                    </button>
+                        <!-- <li><a href="{% url 'group_stats' group_id=group.id %}">{{ group.name }}</a></li> -->
+                    {%endfor%}
+                </ul>
+            </div>
         </div>
     </div>
 </div>  

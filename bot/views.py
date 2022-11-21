@@ -357,7 +357,7 @@ class BotView(View):
                         if "Hola" in message:
                             self.send_message(f'Hello {t_message["from"]["first_name"]} {t_message["from"]["last_name"]}!', t_chat["id"])
                         else:
-                            self.send_message("I don´t understand", t_chat["id"])
+                            return JsonResponse({"ok": "POST request processed"})
                 return JsonResponse({"ok": "POST request processed"})
         
         except KeyError:
@@ -446,8 +446,65 @@ class BotView(View):
         return render(request, 'stats.html', context)
 
 
+def GroupStats(request, group_id):
+    chat = Chat.objects.get(pk = group_id)
+    players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+    stats = []
+    players = {}
+    number_game = {}
+    trivia_game = {}
+    # hangman_game = {}
+    for player_id in players_ids:
+        player_ = Member.objects.get(pk=player_id)
+        number_game[player_.name] = player_.number_games_won
+        trivia_game[player_.name] = player_.trivia_games_won
+
+    players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
+    players =dict(reversed(list(players.items())))
+    stats_dict = {}
+    pos = 1
+    for key, value in players.items():
+        stats_dict[f'{pos}) {key}'] = value
+        pos += 1
+
+    number_game = {k: v for k, v in sorted(number_game.items(), key=lambda item: item[1])}
+    number_game =dict(reversed(list(number_game.items())))
+    number_stats_dict = {}
+    pos = 1
+    for key, value in number_game.items():
+        number_stats_dict[f'{pos}) {key}'] = value
+        pos += 1
+
+    trivia_game = {k: v for k, v in sorted(trivia_game.items(), key=lambda item: item[1])}
+    trivia_game =dict(reversed(list(trivia_game.items())))
+    trivia_stats_dict = {}
+    pos = 1
+    for key, value in trivia_game.items():
+        trivia_stats_dict[f'{pos}) {key}'] = value
+        pos += 1
+
+    stats.append({"chat_name":chat.chat_name, "stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
+
+    context ={
+        'group_stats': stats
+    }
+    return render(request, 'group.html', context)
+
+
 def Home(request):
-    return render(request, 'home.html')
+    all_chats_id = list(Chat.objects.all().values_list('pk', flat=True))
+    print(all_chats_id)
+    chats = []
+    for id in all_chats_id:
+        chat = Chat.objects.get(pk = id)
+        group = {"name":chat.chat_name, "id":id}
+        chats.append(group)
+
+    print(chats)
+    context = {
+        'chats': chats
+    }
+    return render(request, 'home.html', context)
 
 
 

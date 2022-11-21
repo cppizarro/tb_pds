@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
-from bot.views import BotView, Home
+from bot.views import BotView, Home, GroupStats
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Home),
     path('webhook/', csrf_exempt(BotView.as_view()), name="stats"),
+    path('<group_id>', GroupStats, name="group_stats")
 ]
