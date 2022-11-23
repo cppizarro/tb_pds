@@ -1,1 +1,95 @@
-<h1>hola</h1>
+<head>
+    <!-- USE DEVELOPMENT VERSION -->
+    <meta charset="utf-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+  
+    <title>Proyecto de Desarrollo de Sotfware - Proyecto 4</title>
+</head>
+
+<div id="topbar">
+    <div>
+        <h1 style="text-decoration: underline;">
+        Telegram Bot - Stats
+        </h1>
+    </div>
+    <div>
+
+        <div>
+            <h2> Welcome to the stats of group: {{chat_name}}</h2>
+        </div>
+
+        <div class="d-flex justify-content-left">
+            <table class="center" style="border: 1px solid; border-collapse: collapse">
+                <tr style="border: 1px solid;">
+                    <th style="border: 1px solid;">Stats</th>
+                    <th style="border: 1px solid;">Number Game Stats</th>
+                    <th style="border: 1px solid;">Trivia Game Stats</th>
+                </tr>
+
+                {% for item in stats %}
+                
+                <tr style="border: 1px solid;">
+                    {%for key,value in item.items%}
+                        
+                        {%if key == "stats"%}
+                        <td style="border: 1px solid;">
+                            <table style="border: none;" >
+                                <tr>
+                                    <!-- <th>Position</th> -->
+                                    <th>Player Name</th>
+                                    <th>Points</th>
+                                </tr>
+                                {%for k, v in value.items%}
+                                <tr>
+                                    <!-- <td>netrg</td> -->
+                                    <td>{{ k }}</td>
+                                    <td>&emsp;{{ v }}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </td>
+                        {%elif key == "number_stats"%}
+                        <td style="border: 1px solid;">
+                            <table style="border: none;" >
+                                <tr>
+                                    <!-- <th>Position</th> -->
+                                    <th>Player Name</th>
+                                    <th>Points</th>
+                                </tr>
+                                {%for k, v in value.items%}
+                                <tr>
+                                    <!-- <td>netrg</td> -->
+                                    <td>{{ k }}</td>
+                                    <td>&emsp;{{ v }}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </td>
+                        {%elif key == "trivia_stats"%}
+                        <td style="border: 1px solid;">
+                            <table style="border: none;" >
+                                <tr>
+                                    <!-- <th>Position</th> -->
+                                    <th>Player Name</th>
+                                    <th>Points</th>
+                                </tr>
+                                {%for k, v in value.items%}
+                                <tr>
+                                    <!-- <td>netrg</td> -->
+                                    <td>{{ k }}</td>
+                                    <td>&emsp;{{ v }}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </td>
+                        {%endif%}
+                    {%endfor%}
+                    
+                </tr>
+                {%endfor%}
+            </table>
+        </div>
+
+    </div>
