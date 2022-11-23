@@ -482,6 +482,7 @@ def GroupStats(request, group_id):
     # hangman_game = {}
     for player_id in players_ids:
         player_ = Member.objects.get(pk=player_id)
+        players[player_.name] = player_.games_won
         number_game[player_.name] = player_.number_games_won
         trivia_game[player_.name] = player_.trivia_games_won
 
@@ -510,7 +511,7 @@ def GroupStats(request, group_id):
         pos += 1
 
     stats.append({"chat_name":chat.chat_name, "stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
-
+    print("aqui: ", stats)
     context ={
         'group_stats': stats
     }
