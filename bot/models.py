@@ -9,7 +9,7 @@ class Chat(models.Model):
     # for number game
     attempts_number_game = models.IntegerField(default=3)
     number_number_game = models.IntegerField(default=0)
-    #for trivia game
+    # for trivia game
     trivia_mode = models.TextField(blank=True)
     trivia_number_of_questions = models.IntegerField(default=1)
     trivia_questions = models.JSONField(default=dict())
@@ -17,6 +17,9 @@ class Chat(models.Model):
     tivia_correct_answer = models.TextField(default="")
     trivia_actual_alternatives = models.TextField(default="")
     trivia_last_alternatives = models.TextField(default="")
+    # for code game
+    attempts_code_game = models.IntegerField(default=0)
+    code = models.TextField(default="")
 
 class Member(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="member")
@@ -27,4 +30,5 @@ class Member(models.Model):
     attempts = models.IntegerField(default=0)
     answered_trivia = models.BooleanField(default=False)
     trivia_points = models.IntegerField(default=0)
+    code_points = models.IntegerField(default=0)
 

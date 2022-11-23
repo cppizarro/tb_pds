@@ -132,6 +132,10 @@ class BotView(View):
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
 
+                    elif command == "/c":
+                        # TODO: procesar respuesta
+                        pass
+
                     else:
                         self.send_message("Unrecognized command", t_chat["id"])
 
@@ -207,6 +211,10 @@ class BotView(View):
                             self.send_message("Missing game configuration", t_chat["id"])
                         except ValueError:
                             self.send_message("Last configuration must be a number", t_chat["id"])
+
+                    elif command == "/code":
+                        # TODO: inicializar juego
+                        pass
 
                     else:
                         if command in playing:
