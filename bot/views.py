@@ -10,13 +10,10 @@ from bot.models import Chat, Member
 
 import random
 
-# reemplazar en todos los query t_message["from"] por t_chat
-
 TELEGRAM_URL = "https://api.telegram.org/bot"
 TUTORIAL_BOT_TOKEN = "5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8"
 
 
-# https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://7741-200-73-69-220.sa.ngrok.io/webhook/
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://project4pds.herokuapp.com/webhook/
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://botapp.loca.lt/webhook/
 class BotView(View):
@@ -510,9 +507,10 @@ def GroupStats(request, group_id):
         trivia_stats_dict[f'{pos}) {key}'] = value
         pos += 1
 
-    stats.append({"chat_name":chat.chat_name, "stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
-    print("aqui: ", stats)
+    stats.append({"stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
+
     context ={
+        'chat_name': chat.chat_name,
         'group_stats': stats
     }
     return render(request, 'group.html', context)
@@ -540,5 +538,3 @@ def Home(request):
 
 # https://api.telegram.org/bot5641759368:AAHhRsFPUIi9iaRVtmoSeVrYIkochQCmG-8/setWebhook?url=https://botapp.loca.lt/webhook/
 # lt --port 8000 --subdomain botapp
-
-# tercer juego: colgado, eucaciones
