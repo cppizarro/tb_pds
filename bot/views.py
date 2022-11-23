@@ -218,11 +218,17 @@ class BotView(View):
                             attempts = int(command_args[0])
                             chat.active_game = "code"
                             chat.attempts_code_game = attempts
+                            in_code = []
                             code = str()
-                            for i in range(4):
-                                code += str(random.randint(1,10))
+                            while len(in_code) < 4:
+                                digit = str(random.randint(1,9))
+                                if digit not in in_code:
+                                    in_code.append(digit)
+                                    code += digit
+
                             chat.code = code
                             chat.save()
+                            print(code)
                         except IndexError:
                             self.send_message("Missing game configuration", t_chat["id"])
                         except ValueError:
