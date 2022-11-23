@@ -9,6 +9,7 @@ class Chat(models.Model):
     # for number game
     attempts_number_game = models.IntegerField(default=3)
     number_number_game = models.IntegerField(default=0)
+    limit_number_game = models.IntegerField(default=0)
     # for trivia game
     trivia_mode = models.TextField(blank=True)
     trivia_number_of_questions = models.IntegerField(default=1)

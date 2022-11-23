@@ -103,6 +103,9 @@ class BotView(View):
                                     for player_id in players_ids:
                                         Member.objects.filter(pk=player_id).update(attempts=0)
                             else:
+                                if user_message > chat.limit_number_game:
+                                    self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number is out of range, try again')
+                                    return JsonResponse({"ok": "POST request processed"})
                                 if user_message > chat.number_number_game:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number ( {t_message["text"].split()[1]} ) is greater than mine', t_chat["id"])
                                     player.attempts += 1
@@ -158,9 +161,11 @@ class BotView(View):
                     elif command == "/number":
                         try:
                             attempts = int(command_args[1])
+                            limit = int(command_args[0])
                             chat.active_game = "number"
                             chat.attempts_number_game = attempts
-                            chat.number_number_game = random.randint(0, int(command_args[0]))
+                            chat.limit_number_game = limit
+                            chat.number_number_game = random.randint(0, limit)
                             chat.save()
                             self.send_message(" Number game started, guess the number!", t_chat["id"])
                         except IndexError:
