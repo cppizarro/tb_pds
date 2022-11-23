@@ -26,8 +26,8 @@ class BotView(View):
             t_message = t_data["message"]
             t_chat = t_message["chat"]
             is_command = False
-            games = ["/number", "/trivia"]
-            playing = ["/n", "/t"]
+            games = ["/number", "/trivia", "/code"]
+            playing = ["/n", "/t", "/c"]
 
             print("data: ", t_data)
 
@@ -132,6 +132,10 @@ class BotView(View):
                         except IndexError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
 
+                    elif command == "/c":
+                        # TODO: procesar respuesta
+                        pass
+
                     else:
                         self.send_message("Unrecognized command", t_chat["id"])
 
@@ -207,6 +211,22 @@ class BotView(View):
                             self.send_message("Missing game configuration", t_chat["id"])
                         except ValueError:
                             self.send_message("Last configuration must be a number", t_chat["id"])
+
+                    elif command == "/code":
+                        # FIXME: hacer que el estandar puedan ser != numeros y no solo 4
+                        try:
+                            attempts = int(command_args[0])
+                            chat.active_game = "code"
+                            chat.attempts_code_game = attempts
+                            code = str()
+                            for i in range(4):
+                                code += str(random.randint(1,10))
+                            chat.code = code
+                            chat.save()
+                        except IndexError:
+                            self.send_message("Missing game configuration", t_chat["id"])
+                        except ValueError:
+                            self.send_message("Configurations must be numbers", t_chat["id"])
 
                     else:
                         if command in playing:
