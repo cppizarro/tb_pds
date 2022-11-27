@@ -138,8 +138,7 @@ class BotView(View):
                             correct_answer = chat.code
                             answer = command_args[0]
                             if len(answer) > len(correct_answer):
-                                # FIXME arreglar respuesta del bot
-                                self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} mensaje', t_chat["id"])
+                                self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your code is too long, it must be a code of {len(correct_answer)} numbers', t_chat["id"])
                                 return JsonResponse({"ok": "POST request processed"})
                             if player.attempts >= chat.attempts_code_game:
                                 self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
