@@ -281,11 +281,15 @@ class BotView(View):
                         # FIXME: hacer que el estandar puedan ser != numeros y no solo 4
                         try:
                             attempts = int(command_args[0])
+                            code_len = int(command_args[1])
+                            if code_len > 8 or code_len < 3:
+                                self.send_message("The length of the code must be between 3 and 8", t_chat["id"])
+                                return JsonResponse({"ok": "POST request processed"})
                             chat.active_game = "code"
                             chat.attempts_code_game = attempts
                             in_code = []
                             code = str()
-                            while len(in_code) < 4:
+                            while len(in_code) < code_len:
                                 digit = str(random.randint(1,9))
                                 if digit not in in_code:
                                     in_code.append(digit)
