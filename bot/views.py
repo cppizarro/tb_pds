@@ -463,12 +463,13 @@ class BotView(View):
             players = {}
             number_game = {}
             trivia_game = {}
-            # hangman_game = {}
+            code_game = {}
             for player_id in players_ids:
                 player_ = Member.objects.get(pk=player_id)
                 players[player_.name] = player_.games_won
                 number_game[player_.name] = player_.number_games_won
                 trivia_game[player_.name] = player_.trivia_games_won
+                code_game[player_.name] = player_.code_games_won
 
             players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
             players =dict(reversed(list(players.items())))
@@ -494,7 +495,16 @@ class BotView(View):
                 trivia_stats_dict[f'{pos}) {key}'] = value
                 pos += 1
 
-            global_stats.append({"chat_name":chat.chat_name, "stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
+            code_game = {k: v for k, v in sorted(code_game.items(), key=lambda item: item[1])}
+            code_game =dict(reversed(list(code_game.items())))
+            code_stats_dict = {}
+            pos = 1
+            for key, value in code_game.items():
+                code_stats_dict[f'{pos}) {key}'] = value
+                pos += 1
+
+            global_stats.append({"chat_name":chat.chat_name, "stats":stats_dict, "number_stats":number_stats_dict, 
+            "trivia_stats":trivia_stats_dict, "code_stats":code_stats_dict})
 
         context = {
             'stats':global_stats
@@ -540,7 +550,16 @@ def GroupStats(request, group_id):
         trivia_stats_dict[f'{pos}) {key}'] = value
         pos += 1
 
-    stats.append({"stats":stats_dict, "number_stats":number_stats_dict, "trivia_stats":trivia_stats_dict})
+    code_game = {k: v for k, v in sorted(code_game.items(), key=lambda item: item[1])}
+    code_game =dict(reversed(list(code_game.items())))
+    code_stats_dict = {}
+    pos = 1
+    for key, value in code_game.items():
+        code_stats_dict[f'{pos}) {key}'] = value
+        pos += 1
+
+    stats.append({"stats":stats_dict, "number_stats":number_stats_dict, 
+        "trivia_stats":trivia_stats_dict, "code_stats":code_stats_dict})
 
     context ={
         'chat_name': chat.chat_name,

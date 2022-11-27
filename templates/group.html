@@ -84,6 +84,23 @@
                                 {%endfor%}
                             </table>
                         </td>
+                        {%elif key == "code_stats"%}
+                        <td style="border: 1px solid;">
+                            <table style="border: none;" >
+                                <tr>
+                                    <!-- <th>Position</th> -->
+                                    <th>Player Name</th>
+                                    <th>Points</th>
+                                </tr>
+                                {%for k, v in value.items%}
+                                <tr>
+                                    <!-- <td>netrg</td> -->
+                                    <td>{{ k }}</td>
+                                    <td>&emsp;{{ v }}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </td>
                         {%endif%}
                     {%endfor%}
                     
