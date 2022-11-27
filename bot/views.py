@@ -152,6 +152,7 @@ class BotView(View):
                                     if att >= chat.attempts_number_game:
                                         no_attempts += 1
                                 if no_attempts == number_of_players:
+                                    print("ni maaaaaaaaaaasss")
                                     self.send_message(f'Game finished, no guessed the code: ( {chat.code} )', t_chat["id"])
                                     chat.active_game = "None"
                                     chat.save()
