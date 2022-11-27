@@ -103,7 +103,7 @@ class BotView(View):
                                     for player_id in players_ids:
                                         Member.objects.filter(pk=player_id).update(attempts=0)
                             else:
-                                if user_message > chat.limit_number_game:
+                                if user_message > chat.limit_number_game or user_message < 0:
                                     self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} your number is out of range, try again')
                                     return JsonResponse({"ok": "POST request processed"})
                                 if user_message > chat.number_number_game:
