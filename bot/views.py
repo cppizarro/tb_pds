@@ -135,7 +135,12 @@ class BotView(View):
                     elif command == "/c":
                         try:
                             aux = int(command_args[0])
+                            correct_answer = chat.code
                             answer = command_args[0]
+                            if len(answer) > len(correct_answer):
+                                # FIXME arreglar respuesta del bot
+                                self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} mensaje', t_chat["id"])
+                                return JsonResponse({"ok": "POST request processed"})
                             if player.attempts >= chat.attempts_code_game:
                                 self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
                                 players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
@@ -154,8 +159,38 @@ class BotView(View):
                                     for player_id in players_ids:
                                         Member.objects.filter(pk=player_id).update(attempts=0)
                             else:
-                                # TODO: procesar respuesta
-                                pass       
+                                right_pos = []
+                                wrong_pos = []
+                                not_in_code = []
+                                bot_answer = {}
+                                if answer == correct_answer:
+                                    self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you guessed the code!', t_chat["id"])
+                                    player.code_games_won += 1
+                                    player.games_won += 1
+                                    player.save()
+                                    chat.active_game = "None"
+                                    chat.save()
+                                    players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                    for player_id in players_ids:
+                                        Member.objects.filter(pk=player_id).update(attempts=0) 
+                                for i in range(len(correct_answer)):
+                                    if answer[i] in correct_answer:
+                                        if answer[i] == correct_answer[i]:
+                                            right_pos.append(i)
+                                            bot_answer[i] = 2
+                                        else:
+                                            wrong_pos.append(i)
+                                            bot_answer[i] = 1
+                                    else:
+                                        not_in_code.append(i)
+                                        bot_answer[i] = 0
+                                bot_answer = {k: v for k, v in sorted(bot_answer.items(), key=lambda item: item[0])}
+                                bot_message = ''.join(map(str, bot_answer.values()))
+                                self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}: {bot_message}', t_chat["id"])
+                                player.attempts += 1
+                                player.save()
+
+
                             
                         except ValueError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must enter numbers', t_chat["id"])
@@ -259,6 +294,7 @@ class BotView(View):
                             chat.code = code
                             chat.save()
                             print(code)
+                            self.send_message("Code game started!", t_chat["id"]) 
                         except IndexError:
                             self.send_message("Missing game configuration", t_chat["id"])
                         except ValueError:
