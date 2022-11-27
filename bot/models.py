@@ -28,8 +28,8 @@ class Member(models.Model):
     games_won = models.IntegerField(default=0)
     number_games_won = models.IntegerField(default=0)
     trivia_games_won = models.IntegerField(default=0)
+    code_games_won = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     answered_trivia = models.BooleanField(default=False)
     trivia_points = models.IntegerField(default=0)
-    code_points = models.IntegerField(default=0)
 
