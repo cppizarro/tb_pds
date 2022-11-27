@@ -173,24 +173,24 @@ class BotView(View):
                                     players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
                                     for player_id in players_ids:
                                         Member.objects.filter(pk=player_id).update(attempts=0) 
-                                for i in range(len(correct_answer)):
-                                    if answer[i] in correct_answer:
-                                        if answer[i] == correct_answer[i]:
-                                            right_pos.append(i)
-                                            bot_answer[i] = 2
+                                    return JsonResponse({"ok": "POST request processed"})
+                                else:
+                                    for i in range(len(correct_answer)):
+                                        if answer[i] in correct_answer:
+                                            if answer[i] == correct_answer[i]:
+                                                right_pos.append(i)
+                                                bot_answer[i] = 2
+                                            else:
+                                                wrong_pos.append(i)
+                                                bot_answer[i] = 1
                                         else:
-                                            wrong_pos.append(i)
-                                            bot_answer[i] = 1
-                                    else:
-                                        not_in_code.append(i)
-                                        bot_answer[i] = 0
-                                bot_answer = {k: v for k, v in sorted(bot_answer.items(), key=lambda item: item[0])}
-                                bot_message = ''.join(map(str, bot_answer.values()))
-                                self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}: {bot_message}', t_chat["id"])
-                                player.attempts += 1
-                                player.save()
-
-
+                                            not_in_code.append(i)
+                                            bot_answer[i] = 0
+                                    bot_answer = {k: v for k, v in sorted(bot_answer.items(), key=lambda item: item[0])}
+                                    bot_message = ''.join(map(str, bot_answer.values()))
+                                    self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}: {bot_message}', t_chat["id"])
+                                    player.attempts += 1
+                                    player.save()
                             
                         except ValueError:
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must enter numbers', t_chat["id"])
