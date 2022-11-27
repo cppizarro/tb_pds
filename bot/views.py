@@ -519,12 +519,13 @@ def GroupStats(request, group_id):
     players = {}
     number_game = {}
     trivia_game = {}
-    # hangman_game = {}
+    code_game = {}
     for player_id in players_ids:
         player_ = Member.objects.get(pk=player_id)
         players[player_.name] = player_.games_won
         number_game[player_.name] = player_.number_games_won
         trivia_game[player_.name] = player_.trivia_games_won
+        code_game[player_.name] = player_.code_games_won
 
     players = {k: v for k, v in sorted(players.items(), key=lambda item: item[1])}
     players =dict(reversed(list(players.items())))
