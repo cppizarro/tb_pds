@@ -277,7 +277,6 @@ class BotView(View):
                             self.send_message("Last configuration must be a number", t_chat["id"])
 
                     elif command == "/code":
-                        # FIXME: hacer que el estandar puedan ser != numeros y no solo 4
                         try:
                             attempts = int(command_args[0])
                             code_len = int(command_args[1])
