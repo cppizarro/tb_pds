@@ -133,8 +133,36 @@ class BotView(View):
                             self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a number', t_chat["id"])
 
                     elif command == "/c":
-                        # TODO: procesar respuesta
-                        pass
+                        try:
+                            aux = int(command_args[0])
+                            answer = command_args[0]
+                            if player.attempts >= chat.attempts_code_game:
+                                self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]} you don´t have more attempts', t_chat["id"])
+                                players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                number_of_players = len(players_ids)
+                                no_attempts = 0
+                                for player_id in players_ids:
+                                    player_ = Member.objects.get(pk=player_id)
+                                    att = player_.attempts 
+                                    if att >= chat.attempts_number_game:
+                                        no_attempts += 1
+                                if no_attempts == number_of_players:
+                                    self.send_message(f'Game finished, no guessed the code: ( {chat.code} )', t_chat["id"])
+                                    chat.active_game = "None"
+                                    chat.save()
+                                    players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
+                                    for player_id in players_ids:
+                                        Member.objects.filter(pk=player_id).update(attempts=0)
+                            else:
+                                # TODO: procesar respuesta
+                                pass       
+                            
+                        except ValueError:
+                            self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must enter numbers', t_chat["id"])
+                        except KeyError:
+                            self.send_message("There's no code to guess! say /code to start", t_chat["id"])
+                        except IndexError:
+                            self.send_message(f'{t_message["from"]["first_name"]} {t_message["from"]["last_name"]}, you must send a code', t_chat["id"])
 
                     else:
                         self.send_message("Unrecognized command", t_chat["id"])
