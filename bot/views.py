@@ -377,8 +377,12 @@ class BotView(View):
                                         points = list(players.values())
                                         if len(set(points)) == 1:
                                             if points[0] == 0:
+                                                end_message = (f'Trivia game finished, no one scored')
+                                                self.send_message(end_message, t_chat["id"])
                                                 return JsonResponse({"ok": "POST request processed"})
                                             else: # todos tuvieron el mismo puntaje 
+                                                end_message = (f'Trivia game finished, tied, no one wins points')
+                                                self.send_message(end_message, t_chat["id"])
                                                 return JsonResponse({"ok": "POST request processed"})
 
                                         else:
