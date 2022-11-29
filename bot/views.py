@@ -238,6 +238,9 @@ class BotView(View):
                         try:
                             mode = command_args[0]
                             if mode == "first" or mode == "time":
+                                if mode == "time":
+                                    self.send_message("Time mode is not available", t_chat["id"])
+                                    return JsonResponse({"ok": "POST request processed"})
                                 players_ids = list(Member.objects.filter(chat=chat).all().values_list('pk', flat=True))
                                 players = {}
                                 for player_id in players_ids:
